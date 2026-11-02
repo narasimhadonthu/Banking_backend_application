@@ -71,7 +71,7 @@ BANK/
 
 ## API Endpoints
 
-Base URL: `http://localhost:3000`
+Base URL: https://banking-backend-application-7evs.onrender.com
 
 ### Authentication APIs
 
@@ -177,17 +177,164 @@ http://localhost:3000
 
 ## Testing
 
-Use Postman to test the REST APIs.
+## Postman API Testing Guide
 
-Test the following functionalities:
+Use Postman to test the deployed Banking & Digital Wallet Backend APIs.
 
-- User registration and login.
-- JWT authentication and authorization.
-- Account creation and balance calculation.
-- Fund transfers between accounts.
-- Duplicate transfer prevention using idempotency keys.
-- Transaction consistency and rollback.
-- Transaction history and email notifications.
+**Base URL:**
+```text
+https://banking-backend-application-7evs.onrender.com
+```
+
+### 1. User Authentication
+
+**Register a New User**
+
+- Method: `POST`
+- Endpoint: `/api/auth/register`
+- URL: `https://banking-backend-application-7evs.onrender.com/api/auth/register`
+- Body → raw → JSON:
+
+```json
+{
+  "username": "narasimha",
+  "email": "narasimha@example.com",
+  "password": "Test@12345"
+}
+```
+
+**Login User**
+
+- Method: `POST`
+- Endpoint: `/api/auth/login`
+- URL: `https://banking-backend-application-7evs.onrender.com/api/auth/login`
+- Body → raw → JSON:
+
+```json
+{
+  "email": "narasimha@example.com",
+  "password": "Test@12345"
+}
+```
+
+After successful login, use the returned access token to access protected endpoints.
+
+### 2. Account Management
+
+**Create a Bank Account**
+
+- Method: `POST`
+- Endpoint: `/api/accounts`
+- URL: `https://banking-backend-application-7evs.onrender.com/api/accounts`
+- Authorization: Bearer Token
+- Body → raw → JSON:
+
+```json
+{
+  "currency": "INR"
+}
+```
+
+**Get All User Accounts**
+
+- Method: `GET`
+- Endpoint: `/api/accounts`
+- URL: `https://banking-backend-application-7evs.onrender.com/api/accounts`
+- Authorization: Bearer Token
+- No request body required.
+
+**Get Account Balance**
+
+- Method: `GET`
+- Endpoint: `/api/accounts/:accountId/balance`
+- Example URL:
+
+```text
+https://banking-backend-application-7evs.onrender.com/api/accounts/ACCOUNT_ID/balance
+```
+
+- Authorization: Bearer Token
+- Replace `ACCOUNT_ID` with the actual account ID.
+- No request body required.
+
+### 3. Fund Transfer
+
+**Transfer Funds Between Accounts**
+
+- Method: `POST`
+- Endpoint: `/api/transactions/transfer`
+- URL: `https://banking-backend-application-7evs.onrender.com/api/transactions/transfer`
+- Authorization: Bearer Token
+- Body → raw → JSON:
+
+```json
+{
+  "fromAccount": "SENDER_ACCOUNT_ID",
+  "toAccount": "RECEIVER_ACCOUNT_ID",
+  "amount": 500,
+  "idempotencyKey": "transfer-unique-001"
+}
+```
+
+Replace the account IDs with valid sender and receiver account IDs. Use a unique idempotency key for each new transfer. Reuse the same key when retrying the same transfer.
+
+### 4. Transaction Details
+
+**Get Transaction Details**
+
+- Method: `GET`
+- Endpoint: `/api/transactions/:transactionId`
+- Example URL:
+
+```text
+https://banking-backend-application-7evs.onrender.com/api/transactions/TRANSACTION_ID
+```
+
+- Authorization: Bearer Token
+- Replace `TRANSACTION_ID` with the actual transaction ID.
+- No request body required.
+
+### 5. Initial Funds
+
+**Add Initial Funds**
+
+- Method: `POST`
+- Endpoint: `/api/transactions/initial-funds`
+- URL: `https://banking-backend-application-7evs.onrender.com/api/transactions/initial-funds`
+- Authorization: Bearer Token
+
+This endpoint is restricted to authorized system users. The request body must match the fields expected by the initial-funds controller.
+
+### 6. Refresh Access Token
+
+**Refresh JWT Access Token**
+
+- Method: `POST`
+- Endpoint: `/api/auth/refresh`
+- URL: `https://banking-backend-application-7evs.onrender.com/api/auth/refresh`
+
+Send the refresh token using the HTTP-only cookie established during login. Enable cookie handling in Postman.
+
+### 7. Logout
+
+**Logout User**
+
+- Method: `POST`
+- Endpoint: `/api/auth/logout`
+- URL: `https://banking-backend-application-7evs.onrender.com/api/auth/logout`
+
+Send the required authentication token and refresh-token cookie.
+
+### Postman Instructions
+
+1. Open Postman and create a new HTTP request.
+2. Select the appropriate HTTP method (GET or POST).
+3. Enter the complete API URL.
+4. For POST requests, select **Body → raw → JSON** and enter the request payload.
+5. For protected endpoints, select **Authorization → Bearer Token** and provide the access token received during login.
+6. Click **Send** to execute the request and view the response.
+
+**Note:** Replace example values such as account IDs, transaction IDs, and email addresses with valid values from your own test data. Request field names and payloads must match the backend controller implementation.
 
 ## Future Improvements
 
